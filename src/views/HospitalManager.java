@@ -7,6 +7,7 @@ package views;
 import controllers.NursesManager;
 import controllers.PatientsManager;
 import java.util.Scanner;
+import models.Patients;
 
 /**
  *
@@ -17,6 +18,7 @@ public class HospitalManager {
     public static void main(String[] args) {
         int choise = 0;
         int superchoise = 0;
+        boolean check = false;
         Scanner sc = new Scanner(System.in);
         NursesManager nm = new NursesManager();
         nm.addNursesFromFile("nurses.txt");
@@ -35,8 +37,23 @@ public class HospitalManager {
                     + "2.4	Save data\n"
                     + "2.5	Load data\n"
                     + "Others – Quit.");
-            System.out.println("Choise 1 or 2:");
-            superchoise = Integer.parseInt(sc.nextLine());
+
+            do {
+                try {
+                    System.out.println("Choise 1 or 2:");
+
+                    superchoise = Integer.parseInt(sc.nextLine());
+                    if (choise < 0 || superchoise > 2) {
+                        throw new Exception("Something wrong!");
+                    } else {
+                        check = false;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Something wrong!");
+                    check = true;
+                }
+            } while (check);
+
             switch (superchoise) {
                 case 1:
                     do {
@@ -46,9 +63,22 @@ public class HospitalManager {
                         System.out.println("4 - Save data");
                         System.out.println("5 - Load data");
                         System.out.println("Orther: Quit");
-                        System.out.println("Enter your choise");
-                        choise = Integer.parseInt(sc.nextLine());
 
+                        do {
+                            try {
+                                System.out.println("Enter your choise");
+
+                                choise = Integer.parseInt(sc.nextLine());
+                                if (choise < 0) {
+                                    throw new Exception("Something wrong!");
+                                } else {
+                                    check = false;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Something wrong!");
+                                check = true;
+                            }
+                        } while (check);
                         switch (choise) {
                             case 1:
                                 while (true) {
@@ -90,8 +120,22 @@ public class HospitalManager {
                         System.out.println("4 - Save data");
                         System.out.println("5 - Load data");
                         System.out.println("Orther: Quit");
-                        System.out.println("Enter your choise");
-                        choise = Integer.parseInt(sc.nextLine());
+
+                        do {
+                            try {
+                                System.out.println("Enter your choise");
+
+                                choise = Integer.parseInt(sc.nextLine());
+                                if (choise < 0) {
+                                    throw new Exception("Something wrong!");
+                                } else {
+                                    check = false;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Something wrong!");
+                                check = true;
+                            }
+                        } while (check);
                         switch (choise) {
                             case 1:
                                 while (true) {
@@ -110,22 +154,29 @@ public class HospitalManager {
                                 }
                                 break;
                             case 2:
-
+                                pm.printList();
                                 break;
                             case 3:
-
+                                pm.printListSort();
                                 break;
                             case 4:
-
+                                nm.addNursesToFile("nurses.txt");
+                                pm.addPatientsToFile("patients.txt");
+                                break;
+                            case 5:
+                                pm.addPatientsFromFile("patients.txt");
+                                nm.addNursesFromFile("nurses.txt");
                                 break;
                             default:
                                 System.out.println("Input error!!!");
                         }
+
                     } while (choise > 0 && choise < 5);
                     break;
                 default:
                     System.out.println("Input error!");
             }
+
         } while (choise > 0 && choise < 2);
 
     }

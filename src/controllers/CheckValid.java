@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.Map;
 import models.Nurses;
 
 /**
@@ -61,11 +62,31 @@ public class CheckValid {
             return false;
         }
     }
+    public boolean checkIDBV2(String id) {
+        NursesManager xxx = new NursesManager();
+        xxx.addNursesFromFile("nurses.txt");
+//        Nurses yyy = xxx.searchNursesId(id);
+        if (xxx.hm.containsKey(id)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public String findKey(String name){
+        NursesManager xxx = new NursesManager();
+        xxx.addNursesFromFile("nurses.txt");
+        for(Map.Entry<String, Nurses> entry : xxx.hm.entrySet()){
+            if(entry.getValue().getName().equals(name)){
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
     public boolean checkIDPatientB(String id) {
         PatientsManager xxx = new PatientsManager();
         xxx.addPatientsFromFile("patients.txt");
 //        Nurses yyy = xxx.searchNursesId(id);
-        if (!xxx.hm.containsKey(id)) {
+        if (!xxx.hmp.containsKey(id)) {
             return true;
         } else {
             System.out.println("Duplicated id.Try with another one");

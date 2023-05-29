@@ -4,6 +4,7 @@
  */
 package controllers;
 
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,7 +12,13 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import models.Nurses;
@@ -24,7 +31,8 @@ import models.Patients;
 public class PatientsManager extends Patients {
 
     private Scanner sc = new Scanner(System.in);
-    public HashMap<String, Patients> hm = new HashMap<>();
+    public HashMap<String, Patients> hmp = new HashMap<>();
+    List<Map.Entry<String, Patients>> list = new LinkedList<Map.Entry<String, Patients>>(hmp.entrySet());
 
     public PatientsManager() {
     }
@@ -33,24 +41,25 @@ public class PatientsManager extends Patients {
 
         System.out.println("Input patient id: ");
         String staffID = sc.nextLine().toUpperCase();
-        if (!hm.containsKey(staffID)) {
+        if (!hmp.containsKey(staffID)) {
             System.out.println("Can't find infomation about " + staffID);
         } else {
-            hm.get(staffID).printPatient();
+            hmp.get(staffID).printPatient();
         }
     }
 
     public Patients searchPatientID(String patientID) {
-        if (hm.isEmpty()) {
+        if (hmp.isEmpty()) {
             return null;
         }
-        if (hm.containsKey(patientID)) {
-            return hm.get(patientID);
+        if (hmp.containsKey(patientID)) {
+            return hmp.get(patientID);
         }
         return null;
     }
 
     public void addPatientsFromFile(String fPatient) {
+
         try {
             File f = new File(fPatient);
             if (!f.exists()) {
@@ -59,10 +68,11 @@ public class PatientsManager extends Patients {
             FileReader fr = new FileReader(f);
             BufferedReader bf = new BufferedReader(fr);
             String details;
+            String staffID;
             while ((details = bf.readLine()) != null) {
                 StringTokenizer stk = new StringTokenizer(details, ",");
                 String patientsID = stk.nextToken().toUpperCase();
-                new CheckValid().checkID(patientsID);
+//                new CheckValid().checkID(patientsID);
                 String name = stk.nextToken().toUpperCase();
                 int age = Integer.parseInt(stk.nextToken());
                 String gender = stk.nextToken().toUpperCase();
@@ -71,16 +81,21 @@ public class PatientsManager extends Patients {
                 new CheckValid().checkValidPhone(phone);
                 String diagnosis = stk.nextToken().toUpperCase();
 //                new CheckValid().checkDepartment(department);
-                String dateString = stk.nextToken();
+                String dateString1 = stk.nextToken();
+                String dateString2 = stk.nextToken();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-                LocalDate admissionDate = LocalDate.parse(dateString, formatter);
-                LocalDate dischargeDate = LocalDate.parse(dateString, formatter);
-                String staffID = stk.nextToken().toUpperCase();
+                LocalDate admissionDate = LocalDate.parse(dateString1, formatter);
+                LocalDate dischargeDate = LocalDate.parse(dateString2, formatter);
                 NursesManager nm = new NursesManager();
+                nm.addNursesFromFile("nurses.txt");
+                do {
+                    staffID = stk.nextToken().toUpperCase();
+                } while (!new CheckValid().checkIDBV2(staffID) || nm.hm.get(staffID) == null);
+
                 String nurseAssigned = nm.hm.get(staffID).getName();
                 Patients emp = new Patients(patientsID, diagnosis, admissionDate, dischargeDate, nurseAssigned, name, age, gender, address, phone);
 
-                hm.put(patientsID, emp);
+                hmp.put(patientsID, emp);
             }
             bf.close();
             fr.close();
@@ -95,6 +110,8 @@ public class PatientsManager extends Patients {
         DateTimeFormatter formatter;
         LocalDate admissionDate, dischargeDate;
         String dateString, dateString2;
+        NursesManager nm = new NursesManager();
+        nm.addNursesFromFile("nurses.txt");
         do {
             System.out.println("Input patients ID: ");
             patientsID = sc.nextLine().toUpperCase();
@@ -141,16 +158,16 @@ public class PatientsManager extends Patients {
         do {
             System.out.println("Input nurses id: ");
             staffID = sc.nextLine().toUpperCase();
-        } while (!new CheckValid().checkIDB(staffID));
-        String nurseAssigned = null;
-        nurseAssigned = new NursesManager().hm.get(staffID).getName();
+        } while (!new CheckValid().checkIDBV2(staffID) || nm.hm.get(staffID) == null);
+
+        String nurseAssigned = nm.hm.get(staffID).getName();
         Patients emp = new Patients(patientsID, diagnosis, admissionDate, dischargeDate, nurseAssigned, name, age, gender, address, phone);
 
-        hm.put(staffID, emp);
+        hmp.put(staffID, emp);
     }
 
     public void addPatientsToFile(String fPatients) {
-        if (hm.size() == 0) {
+        if (hmp.size() == 0) {
             System.out.println("Empty list");
             return;
         }
@@ -158,13 +175,63 @@ public class PatientsManager extends Patients {
             File f = new File(fPatients);
             FileWriter fw = new FileWriter(f);
             PrintWriter pw = new PrintWriter(fw);
-            for (Patients x : hm.values()) {
-                pw.println(x.getPatientsID() + "," + x.getName() + "," + x.getAge() + "," + x.getGender() + "," + x.getAddress() + "," + x.getPhone() + "," + x.getDiagnosis() + "," + x.getAdmissionDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "," + x.getDischargeDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "," + x.getNurseAssigned());
+            for (Patients x : hmp.values()) {
+                pw.println(x.getPatientsID() + "," + x.getName() + "," + x.getAge() + "," + x.getGender() + "," + x.getAddress() + "," + x.getPhone() + "," + x.getDiagnosis() + "," + x.getAdmissionDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "," + x.getDischargeDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "," + new CheckValid().findKey(x.getNurseAssigned()));
             }
             pw.close();
             fw.close();
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    public void printList() {
+        Patients pa = new Patients();
+        System.out.println("LIST OF PATIENTS");
+        for (int i = 0; i < 91; i++) {
+            System.out.printf("#");
+        }
+        System.out.println("");
+        System.out.printf("#%15s#%15s#%20s#%15s#%20s#\n", "Patient Id", "Admission Date", "Full name", "Phone", "Diagnosis");
+        for (int i = 0; i < 91; i++) {
+            System.out.printf("#");
+        }
+        System.out.println("");
+        for (Patients value : hmp.values()) {
+            value.printPatient();
+        }
+        for (int i = 0; i < 91; i++) {
+            System.out.printf("#");
+        }
+        System.out.println("");
+    }
+
+    public void printListSort() {
+        Patients pa = new Patients();
+        System.out.println("LIST OF PATIENTS SORT");
+        for (int i = 0; i < 91; i++) {
+            System.out.printf("#");
+        }
+        System.out.println("");
+        System.out.printf("#%15s#%15s#%20s#%15s#%20s#\n", "Patient Id", "Admission Date", "Full name", "Phone", "Diagnosis");
+        for (int i = 0; i < 91; i++) {
+            System.out.printf("#");
+        }
+        System.out.println("");
+        
+        Collections.sort(list, new Comparator<Map.Entry<String, Patients>>() {
+            @Override
+            public int compare(Map.Entry<String, Patients> o1, Map.Entry<String, Patients> o2) {
+                return o1.getValue().getName().compareTo(o2.getValue().getName());
+            }
+        });
+        for (Map.Entry<String, Patients> entry : list) {
+            entry.getValue().printPatient();
+//            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+        for (int i = 0; i < 91; i++) {
+            System.out.printf("#");
+        }
+        System.out.println("");
     }
 }

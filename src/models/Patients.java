@@ -77,7 +77,7 @@ public class Patients extends Person{
         return "Patients{" + "diagnosis=" + diagnosis + ", admissionDate=" + admissionDate + ", dischargeDate=" + dischargeDate + ", nurseAssigned=" + nurseAssigned + '}';
     }
     public void printPatient(){
-        System.out.printf("#%15s#%15s#%20s#%15s#%20s#", patientsID, admissionDate, name, phone, diagnosis);
+        System.out.printf("#%15s#%15s#%20s#%15s#%20s#\n", patientsID, admissionDate, name, phone, diagnosis);
     }
     
 }
