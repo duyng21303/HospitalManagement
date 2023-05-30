@@ -96,7 +96,7 @@ public class HospitalManager {
                                 }
                                 break;
                             case 2:
-                                pm.findNurses();
+                                nm.findNurses();
                                 break;
                             case 3:
                                 nm.updateNurse("nurses.txt");

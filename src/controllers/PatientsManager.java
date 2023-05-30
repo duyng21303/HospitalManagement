@@ -37,7 +37,7 @@ public class PatientsManager extends Patients {
     public PatientsManager() {
     }
 
-    public void findNurses() {
+    public void findPatient() {
 
         System.out.println("Input patient id: ");
         String staffID = sc.nextLine().toUpperCase();

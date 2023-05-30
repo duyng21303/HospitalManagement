@@ -32,7 +32,6 @@ public class NursesManager extends Nurses {
     }
 
     public void findNurses() {
-
         System.out.println("Input staff id: ");
         String staffID = sc.nextLine().toUpperCase();
         if (!hm.containsKey(staffID)) {
