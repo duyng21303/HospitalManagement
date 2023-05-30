@@ -57,11 +57,10 @@ public class HospitalManager {
             switch (superchoise) {
                 case 1:
                     do {
-                        System.out.println("1 - Add a patient");
-                        System.out.println("2 - List patients");
-                        System.out.println("3 - Sort the patients list");
-                        System.out.println("4 - Save data");
-                        System.out.println("5 - Load data");
+                        System.out.println("1 - Create a nurse");
+                        System.out.println("2 - Find the nurse");
+                        System.out.println("3 - Update the nurse");
+                        System.out.println("4 - Delete the nurse");
                         System.out.println("Orther: Quit");
 
                         do {
